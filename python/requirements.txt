@@ -4,3 +4,4 @@ networkx==1.11
 numpy==1.11.0
 pandas==0.18.0
 tweepy==3.5.0
+py2neo==3

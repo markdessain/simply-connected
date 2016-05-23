@@ -5,7 +5,7 @@ LOAD CSV WITH HEADERS FROM "file:///tweets.csv" AS line
 CREATE (:Tweet { id: line.id, user_id: line.user_id, text: line.text })
 
 LOAD CSV WITH HEADERS FROM "file:///retweets.csv" AS line
-CREATE (:Retweet { original_id: line.original_id, retweet_id: line.retweet_id })
+CREATE (:Retweet { tweet_id: line.tweet_id, user_id: line.user_id })
 
 LOAD CSV WITH HEADERS FROM "file:///tags.csv" AS line
 CREATE (:Tag { label: line.label })
@@ -22,9 +22,9 @@ MATCH (a:User), (b:Tweet)
 WHERE a.id = b.user_id
 CREATE (a)-[r:TWEETED]->(b)
 
-MATCH (a:Tweet), (b:Tweet), (c:Retweet)
-WHERE a.id = c.original_id AND b.id = c.retweet_id
-CREATE (a)-[r:RETWEETED]->(b)
+MATCH (a:Tweet), (b:User), (c:Retweet)
+WHERE a.id = c.tweet_id AND b.id = c.user_id
+CREATE (b)-[r:RETWEETED]->(a)
 
 MATCH (a:Tweet), (b:Tag), (c:TweetTag)
 WHERE a.id = c.tweet_id AND c.label = b.label
@@ -35,25 +35,20 @@ WHERE a.id = c.user_id AND b.id = c.like_id
 CREATE (a)-[r:LIKE]->(b)
 
 
-MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)-[rt2:RETWEETED]->(t2:Tweet)<-[rt3:TWEETED]-(u2:User)
-WHERE rt2 IS NOT NULL
-RETURN u,rt,t,rt2,t2,rt3,u2
+MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)<-[rt2:RETWEETED]-(u2:User)
+RETURN u,rt,t,rt2,u2
 LIMIT 10
 
 
-MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)-[rt2:RETWEETED]->(t2:Tweet)<-[rt3:TWEETED]-(u2:User)
-WHERE rt2 IS NOT NULL
-WITH u2, t2
-RETURN u2, count(DISTINCT t2) as retweets
+MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)<-[rt2:RETWEETED]-(u2:User)
+WITH u2, rt2
+RETURN u2, count(DISTINCT rt2) as retweets
 ORDER BY retweets DESC
-LIMIT 100
+LIMIT 10
 
 
-MATCH (tweets:Tweets)-[r:TAGGED]->(tags:Tags)
-WITH tags, COUNT(r) as c
-WHERE c > 300
-MATCH (tweets:Tweets),(tweet_tags:TweetTags)
-WHERE tweet_tags.label = tags.label AND tweet_tags.tweet_id = tweets.id
-RETURN tweets
+MATCH (location:Location)<-[lives:LIVES]-(user:User)-[tweeted:TWEETED]->(tweet:Tweet)-[tagged:TAGGED]->(tag:Tag)
+WHERE location.sub_state =~ ".*Yorkshire"
+RETURN location, lives, user, tweeted, tweet, tagged, tag
 
  

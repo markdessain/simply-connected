@@ -19,8 +19,12 @@ class Exporter
     JSON.parse(@redis["tweet:#{tweet_id}"])
   end
 
-  def friends(user_id)
-    @redis.smembers("user:#{user_id}:friends")
+  def location(location_id)
+    begin
+      JSON.parse(@redis["location:#{location_id}"])
+    rescue
+      {}
+    end
   end
 
   def user_timeline(user_id)
@@ -40,25 +44,20 @@ class Exporter
     results
   end
 
-  def user_locations(user_id)
-    results = []
-    user_timeline(user_id).each do |tweet|
-      results.push(tweet["user"]["location"])
-    end
-
-    results
-  end
-
-
   def all_users
     results = []
     @redis.keys("user:*").each do |key|
       if(key.split(":").size == 2)
         user_hash = user(key.split(":")[1])
+        if user_hash["location"]
+          loc = location(URI.escape(user_hash["location"]))["sub_state"]
+        else
+          loc = None
+        end
         results.push({
           "id" => user_hash["id_str"],
           "screen_name" => user_hash["screen_name"],
-          "location" => user_hash["location"],
+          "location" => loc,
         })
       end
     end
@@ -88,9 +87,11 @@ class Exporter
 
       original_id = key.split(":")[1]
       @redis.smembers(key).each do |retweet_id|
+
+        t = tweet(retweet_id)
         results.push({
-          "original_id" => original_id,
-          "retweet_id" => retweet_id,
+          "tweet_id" => original_id,
+          "user_id" => t["user"]["id_str"],
         })
       end
 
@@ -138,48 +139,15 @@ class Exporter
     results
   end
 
-  def user_places
-
-
-    results = []
-    @redis.keys("user:*").each do |key|
-      if(key.split(":").size == 2)
-        user_hash = user(key.split(":")[1])
-
-        begin
-
-          if(user_hash["location"] != "")
-            x = Geocoder.search(user_hash["location"])
-            sleep 0.3
-
-            if(x != nil)
-              puts x[0].class
-              if(x[0].class == NilClass)
-                raise ""
-              end
-
-              results.push({
-                "user_id" => user_hash["id_str"],
-                "state" => x[0].state,
-                "sub_state" => x[0].sub_state,
-              })
-            end
-          end
-
-        rescue
-          puts user_hash["location"]
-          sleep 1
-        end
+  def locations
+    results = Set.new []
+    @redis.keys("location:*").each do |key|
+      loc = location(key.split(":")[1])
+      if loc["sub_state"]
+        results.add({"sub_state" => loc["sub_state"]})
       end
     end
-
     results
-
-
-
-
-
-
   end
 
 
