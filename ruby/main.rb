@@ -40,7 +40,7 @@ exporter = Exporter.new(redis, client)
 
 
 to_csv(exporter.all_users(), "../data/users.csv")
-to_csv(exporter.all_tweets(), "../data/tweets.csv")
+to_csv(exporter.all_tweets(user_id), "../data/tweets.csv")
 to_csv(exporter.retweets(), "../data/retweets.csv")
 to_csv(exporter.all_hash_tags(), "../data/tags.csv")
 to_csv(exporter.all_tweet_tags(), "../data/tweet_tags.csv")

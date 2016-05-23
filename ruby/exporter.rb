@@ -65,18 +65,28 @@ class Exporter
     results
   end
 
-  def all_tweets
+  def all_tweets(user_id)
     results = []
-    @redis.keys("tweet:*").each do |key|
-      if(key.split(":").size == 2)
-        tweet_hash = tweet(key.split(":")[1])
-        results.push({
-          "id" => tweet_hash["id_str"],
-          "text" => tweet_hash["text"],
-          "user_id" => tweet_hash["user"]["id_str"],
-        })
-      end
+
+    user_timeline(user_id).each do |tweet_hash|
+      results.push({
+        "id" => tweet_hash["id_str"],
+        "text" => tweet_hash["text"],
+        "user_id" => tweet_hash["user"]["id_str"],
+      })
     end
+
+    #
+    # @redis.keys("tweet:*").each do |key|
+    #   if(key.split(":").size == 2)
+    #     tweet_hash = tweet(key.split(":")[1])
+    #     results.push({
+    #       "id" => tweet_hash["id_str"],
+    #       "text" => tweet_hash["text"],
+    #       "user_id" => tweet_hash["user"]["id_str"],
+    #     })
+    #   end
+    # end
 
     results
   end
