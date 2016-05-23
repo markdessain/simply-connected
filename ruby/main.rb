@@ -39,9 +39,11 @@ exporter = Exporter.new(redis, client)
 
 # puts exporter.user_hash_tags(user_id).join(" ")
 # puts exporter.user_locations(user_id).join(" ")
+#
+# to_csv(exporter.all_users(), "users.csv")
+# to_csv(exporter.all_tweets(), "tweets.csv")
+# to_csv(exporter.retweets(), "retweets.csv")
+# to_csv(exporter.all_hash_tags(), "tags.csv")
+# to_csv(exporter.all_tweet_tags(), "tweet_tags.csv")
 
-to_csv(exporter.all_users(), "users.csv")
-to_csv(exporter.all_tweets(), "tweets.csv")
-to_csv(exporter.retweets(), "retweets.csv")
-to_csv(exporter.all_hash_tags(), "tags.csv")
-to_csv(exporter.all_tweet_tags(), "tweet_tags.csv")
+to_csv(exporter.user_places(), "user_places.csv")

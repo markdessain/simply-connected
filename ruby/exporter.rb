@@ -1,4 +1,8 @@
 require 'set'
+require 'uri'
+require 'net/http'
+
+require "geocoder"
 
 class Exporter
 
@@ -132,6 +136,50 @@ class Exporter
     end
 
     results
+  end
+
+  def user_places
+
+
+    results = []
+    @redis.keys("user:*").each do |key|
+      if(key.split(":").size == 2)
+        user_hash = user(key.split(":")[1])
+
+        begin
+
+          if(user_hash["location"] != "")
+            x = Geocoder.search(user_hash["location"])
+            sleep 0.3
+
+            if(x != nil)
+              puts x[0].class
+              if(x[0].class == NilClass)
+                raise ""
+              end
+
+              results.push({
+                "user_id" => user_hash["id_str"],
+                "state" => x[0].state,
+                "sub_state" => x[0].sub_state,
+              })
+            end
+          end
+
+        rescue
+          puts user_hash["location"]
+          sleep 1
+        end
+      end
+    end
+
+    results
+
+
+
+
+
+
   end
 
 
