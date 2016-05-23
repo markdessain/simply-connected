@@ -47,8 +47,6 @@ ORDER BY retweets DESC
 LIMIT 10
 
 
-MATCH (location:Location)<-[lives:LIVES]-(user:User)-[tweeted:TWEETED]->(tweet:Tweet)-[tagged:TAGGED]->(tag:Tag)
-WHERE location.sub_state =~ ".*Yorkshire"
-RETURN location, lives, user, tweeted, tweet, tagged, tag
-
+MATCH (location:Location { sub_state: "South Yorkshire" })<-[lives:LIVES]-(user:User)-[retweeted:RETWEETED]->(tweet:Tweet)-[tagged:TAGGED]->(tag:Tag)
+RETURN location, lives, user, retweeted, tweet, tagged, tag
  
