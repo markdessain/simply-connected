@@ -19,19 +19,20 @@ user_id = 15721946 # SimplyBusiness
 importer = Importer.new(redis, client)
 exporter = Exporter.new(redis, client)
 
-# importer.store_user(user_id)
-# importer.store_user_timeline(user_id)
+
+# importer.user(user_id)
+# importer.user_timeline(user_id)
 #
 # importer.get_user_timeline(user_id).each do |tweet|
 #   if (tweet["retweet_count"] > 10 && not(tweet["text"].start_with?("RT")))
 #     with_retry do
-#       importer.store_tweet_retweets(tweet["id_str"])
+#       importer.tweet_retweets(tweet["id_str"])
 #     end
 #   end
 # end
 
-# importer.store_friends(user_id)
-# importer.store_followers(user_id)
+# importer.friends(user_id)
+# importer.followers(user_id)
 
 
-puts exporter.get_user_hash_tags(user_id).join(" ")
+puts exporter.user_hash_tags(user_id).join(" ")
