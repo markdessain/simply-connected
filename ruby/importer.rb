@@ -54,7 +54,7 @@ class Importer
 
           if(user_hash["location"] != "")
             x = Geocoder.search(user_hash["location"])
-            sleep 0.3
+            sleep 0.5
 
             if(x != nil)
               puts x[0].class
