@@ -56,7 +56,7 @@ class Exporter
         end
         results.push({
           "id" => user_hash["id_str"],
-          "screen_name" => user_hash["screen_name"],
+          "screen_name" => user_hash["screen_name"].downcase,
           "location" => loc,
         })
       end
@@ -65,28 +65,31 @@ class Exporter
     results
   end
 
-  def all_tweets(user_id)
+  def all_tweets(user_ids)
     results = []
 
-    user_timeline(user_id).each do |tweet_hash|
-      results.push({
-        "id" => tweet_hash["id_str"],
-        "text" => tweet_hash["text"],
-        "user_id" => tweet_hash["user"]["id_str"],
-      })
-    end
-
-    #
     # @redis.keys("tweet:*").each do |key|
     #   if(key.split(":").size == 2)
     #     tweet_hash = tweet(key.split(":")[1])
-    #     results.push({
-    #       "id" => tweet_hash["id_str"],
-    #       "text" => tweet_hash["text"],
-    #       "user_id" => tweet_hash["user"]["id_str"],
-    #     })
+    #     if (not(tweet_hash["text"].start_with?("RT")))
+    #       results.push({
+    #         "id" => tweet_hash["id_str"],
+    #         "text" => tweet_hash["text"],
+    #         "user_id" => tweet_hash["user"]["id_str"],
+    #       })
+    #     end
     #   end
     # end
+
+    user_ids.each do |user_id|
+      user_timeline(user_id).each do |tweet_hash|
+        results.push({
+          "id" => tweet_hash["id_str"],
+          "text" => tweet_hash["text"],
+          "user_id" => tweet_hash["user"]["id_str"],
+        })
+      end
+    end
 
     results
   end

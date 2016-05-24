@@ -10,14 +10,14 @@ require "csv"
 redis = Redis.new(:host => "localhost", :port => 6379, :db => "simply-connected")
 
 client = Twitter::REST::Client.new do |config|
-  config.consumer_key        = "Sj8FN4ar2raFu7RBKqUqSnY3Q"
-  config.consumer_secret     = "DP2IyZSQTnmdHyyKwEQnTlOXokLaOmrcbF6xlkiDBeq5dhgNr7"
-  # config.access_token        = ""
-  # config.access_token_secret = ""
+  config.consumer_key        = ""
+  config.consumer_secret     = ""
+  config.access_token        = ""
+  config.access_token_secret = ""
 end
 
 
-user_id = 15721946 # SimplyBusiness
+user_id = 101775528 # SimplyBusiness AXA'142294033' SB'15721946' HISCOX'91096435' ZURICH'101775528'
 importer = Importer.new(redis, client)
 exporter = Exporter.new(redis, client)
 
@@ -32,15 +32,16 @@ exporter = Exporter.new(redis, client)
 #     end
 #   end
 # end
-# #
+
 # importer.user_places()
 
 # importer.friends(user_id)
 # importer.followers(user_id)
 
+user_ids = [142294033, 15721946, 91096435, 101775528]
 
 to_csv(exporter.all_users(), "../data/users.csv")
-to_csv(exporter.all_tweets(user_id), "../data/tweets.csv")
+to_csv(exporter.all_tweets(user_ids), "../data/tweets.csv")
 to_csv(exporter.retweets(), "../data/retweets.csv")
 to_csv(exporter.all_hash_tags(), "../data/tags.csv")
 to_csv(exporter.all_tweet_tags(), "../data/tweet_tags.csv")

@@ -1,0 +1,30 @@
+MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)<-[rt2:RETWEETED]-(u2:User)
+RETURN u,rt,t,rt2,u2
+LIMIT 50
+
+
+MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)<-[rt2:RETWEETED]-(u2:User)
+WITH u2, rt2
+RETURN u2, count(DISTINCT rt2) as retweets
+ORDER BY retweets DESC
+LIMIT 10
+
+
+MATCH (u:User { screen_name: 'simplybusiness'})-[rt:TWEETED]->(t:Tweet)<-[rt2:RETWEETED]-(u2:User)-[lives:LIVES]->(location:Location)
+RETURN u2, count(DISTINCT rt2) as retweets, location, lives
+ORDER BY retweets DESC
+LIMIT 40
+
+
+MATCH (location:Location { sub_state: "South Yorkshire" })<-[lives:LIVES]-(user:User)-[retweeted:RETWEETED]->(tweet:Tweet)-[tagged:TAGGED]->(tag:Tag)
+RETURN location, lives, user, retweeted, tweet, tagged, tag
+
+
+MATCH (u:User)-[similar:SIMILAR]->(u2:User)
+RETURN u, similar, u2
+LIMIT 1000
+
+
+MATCH (u:User)-[different:DIFFERENT]->(u2:User)
+RETURN u, different, u2
+LIMIT 1000
